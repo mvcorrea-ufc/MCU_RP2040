@@ -1,0 +1,56 @@
+FROM bitnami/minideb:bullseye
+
+ENV REFRESHED_AT 2021-09-29
+WORKDIR /home/dev
+ENV TZ=America/Fortaleza
+
+# ARM compiler installation
+RUN apt-get update \
+&& apt-get -y install git cmake gcc-arm-none-eabi python3 g++ \
+&& rm -rf /var/lib/apt/lists/*
+
+# rp2040 related staff
+ENV PROCESSOR RP2040
+RUN git clone https://github.com/raspberrypi/pico-sdk.git /opt/sdk/pico-sdk \
+    && cd /opt/sdk/pico-sdk \
+    && git submodule update --init \
+    && cd /home/dev
+ENV PICO_SDK_PATH=/opt/sdk/pico-sdk
+
+
+## build a single container 
+# docker build -t="arm-env:1.0" -f ./dockerfile.minideb .
+## run the container
+# mkdir rpi-pico-projects && cd rpi-pico-projects
+# docker run -it -v $(pwd):/home/dev arm-env:1.0
+## build rpi examples
+#  git clone -b master https://github.com/raspberrypi/pico-examples.git
+#  mkdir pico-examples/build && cd pico-examples/build
+#  cmake .. -DPICO_BOARD=pico && cd blink && make -j4
+## then load the file blink.uf2 by dropping the file on the board folder
+
+
+## clone the full repo
+# git clone https://github.com/mvcorrea-ufc/MCU_RP2040.git
+# cp MCU_RP2040/enviroment/dockerfile.minideb ./Dockerfile
+## create the container
+# docker build -t="arm-env:1.0" .
+## run the container
+## ...
+
+
+### docker command line tips
+## list images: (in oop is like the object)
+# docker images
+## remove an image:
+# docker rmi <image id>+
+## list containers: (in oop is like the instance)
+# docker ps -a
+## remove a containter
+# docker rm <container id>+
+## build an image: (from Dockerfile in current folder)
+# docker build -t <given name> .
+## run a container
+# docker run <given name>
+## attach container
+# docker exec -it <container id> /bin/sh
